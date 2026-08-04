@@ -40,6 +40,52 @@ You can edit these options directly in the JSON file or in-game via Mod Menu:
 * `curseFailureChance` (default: `0.15`): Chance that a random curse is added alongside your chosen enchantment.
 * `maxBookshelfDiscountCount` (default: `15`): Max regular bookshelves counted for lapis/XP discounts.
 
+### Example JSON Config
+```json
+{
+  "safetyNetIntervalTicks": 20,
+  "bestEffortLootStripOutsideLootTables": true,
+  "allowBookEnchanting": false,
+  "guaranteedSlotOrdering": "NEAREST_FIRST",
+  "maxBookshelfDiscountCount": 15,
+  "lapisDiscountPerBookshelf": 0.03,
+  "xpDiscountPerBookshelf": 0.03,
+  "enchantedBookLootEnabled": true,
+  "enchantedBookLootChance": 0.05,
+  "curseFailureChance": 0.15,
+  "consumeEnchantedBook": true,
+  "enchantmentCosts": {
+    "default": {
+      "lapis": 10,
+      "xp": 5,
+      "isProtected": false,
+      "lootWeight": 1
+    },
+    "minecraft:unbreaking": {
+      "lapis": 10,
+      "xp": 5,
+      "isProtected": false,
+      "lootWeight": 1
+    },
+    "minecraft:efficiency": {
+      "lapis": 12,
+      "xp": 7,
+      "isProtected": true,
+      "lootWeight": 2
+    },
+    "some_modded_enchantment:fortune": {
+      "lapis": 15,
+      "xp": 8,
+      "isProtected": false,
+      "lootWeight": 1
+    }
+  }
+}
+```
+
+* `isProtected`: If `true`, the config UI's "Sync Costs" or "Sync Weights" buttons will not overwrite this enchantment's values.
+* `lootWeight`: Set to `0` to disable the book from spawning in chest loot pools entirely. Higher numbers make it spawn proportionally more often.
+
 ---
 
 ## Building
