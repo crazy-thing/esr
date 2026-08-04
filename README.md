@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="esrheader.png" alt="Enchanting System ReImagined (ESR)" width="800/>
+  <img src="esrheader.png" alt="Enchanting System ReImagined (ESR)" width="800"/>
 </p>
+
+
 
 # Enchanting System ReImagined (ESR)
 
