@@ -48,6 +48,7 @@ public final class StripGearEnchantmentsLootFunction implements LootFunction {
             stack.removeSubNbt("Enchantments");
             stack.removeSubNbt("StoredEnchantments");
         } else if (GearItemDetection.isEnchantedBook(item)) {
+            stack.removeSubNbt("Enchantments");
             removeCurses(stack);
 
             Map<Enchantment, Integer> current = EnchantmentHelper.get(stack);
@@ -57,6 +58,7 @@ public final class StripGearEnchantmentsLootFunction implements LootFunction {
                 EnchantmentCapUtil.enforceSingleEnchantment(stack);
             }
         } else {
+            stack.removeSubNbt("StoredEnchantments");
             removeCurses(stack);
         }
         return stack;
@@ -66,9 +68,6 @@ public final class StripGearEnchantmentsLootFunction implements LootFunction {
         if (stack.isEmpty())
             return;
         Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
-        if (enchants.isEmpty())
-            return;
-
         boolean modified = false;
         Map<Enchantment, Integer> newEnchants = new LinkedHashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
