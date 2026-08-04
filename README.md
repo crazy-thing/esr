@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ESR.png" alt="ESR Logo" width="250"/>
+  <img src="esrheader.png" alt="Enchanting System ReImagined (ESR)" width="800/>
 </p>
 
 # Enchanting System ReImagined (ESR)
@@ -13,78 +13,35 @@ Instead of rolling the table for hours or stacking a dozen passive buffs on one 
 ## Features
 
 ### 1. One Enchantment Limit
-* Every item can hold **at most one** regular enchantment.
-* The enchantment is always applied at its **maximum level** (e.g., placing Sharpness on a sword gives you Sharpness V immediately).
-* Curses are preserved and also set to their max level.
+
+Every item can have at most one enchantment.
+* The enchantment is always applied at its maximum level (placing Sharpness on a sword would give you Sharpness V stats).
+* Curses have a chance to also be applied to an item along side the desired enchantment if the enchantment fails.
 * Anvils are used only for repairs; combining items or books to stack enchantments is disabled.
 
 ### 2. Chiseled Bookshelves Guarantee Enchantments
+
 * Place enchanted books in chiseled bookshelves around the enchanting table to guarantee those exact options on the table.
-* Using a bookshelf option consumes the book (this can be disabled in the config).
-* Regular bookshelves nearby still give XP and lapis discounts on the costs.
-* The table interface is updated to show readable enchantment names (e.g., "Sharpness V") instead of Galactic runes, and includes scrollbar support when you have many shelves.
+* Enchanted books placed in chiseled bookselves are consumed when used to enchant an item (this can be disabled in the config).
+* Regular bookshelves nearby give XP and lapis discounts on the enchanting.
+* The table interface is updated to show readable enchantment names (Sharpness) instead of Galactic runes, and includes scrollbar support when you have many shelves.
 
 ### 3. De-enchanted Loot
+
 * Armor, weapons, and tools generated in loot chests spawn without enchantments.
 * Enchanted books still spawn in chests, but conform to the single-enchantment cap.
 * Modded and vanilla enchanted books are injected into chest loot pools with configurable weights so all enchantments have a fair spawn rate.
 
 ---
 
-## Config (`config/enchanting-system-reimagined.json`)
+## Config (enchanting-system-reimagined.json)
 
 You can edit these options directly in the JSON file or in-game via Mod Menu:
 
-* `allowBookEnchanting` (default: `false`): Enables or disables putting plain books on the enchanting table.
-* `consumeEnchantedBook` (default: `true`): If false, books inside chiseled bookshelves are not consumed when used.
-* `curseFailureChance` (default: `0.15`): Chance that a random curse is added alongside your chosen enchantment.
-* `maxBookshelfDiscountCount` (default: `15`): Max regular bookshelves counted for lapis/XP discounts.
-
-### Example JSON Config
-```json
-{
-  "safetyNetIntervalTicks": 20,
-  "bestEffortLootStripOutsideLootTables": true,
-  "allowBookEnchanting": false,
-  "guaranteedSlotOrdering": "NEAREST_FIRST",
-  "maxBookshelfDiscountCount": 15,
-  "lapisDiscountPerBookshelf": 0.03,
-  "xpDiscountPerBookshelf": 0.03,
-  "enchantedBookLootEnabled": true,
-  "enchantedBookLootChance": 0.05,
-  "curseFailureChance": 0.15,
-  "consumeEnchantedBook": true,
-  "enchantmentCosts": {
-    "default": {
-      "lapis": 10,
-      "xp": 5,
-      "isProtected": false,
-      "lootWeight": 1
-    },
-    "minecraft:unbreaking": {
-      "lapis": 10,
-      "xp": 5,
-      "isProtected": false,
-      "lootWeight": 1
-    },
-    "minecraft:efficiency": {
-      "lapis": 12,
-      "xp": 7,
-      "isProtected": true,
-      "lootWeight": 2
-    },
-    "some_modded_enchantment:fortune": {
-      "lapis": 15,
-      "xp": 8,
-      "isProtected": false,
-      "lootWeight": 1
-    }
-  }
-}
-```
-
-* `isProtected`: If `true`, the config UI's "Sync Costs" or "Sync Weights" buttons will not overwrite this enchantment's values.
-* `lootWeight`: Set to `0` to disable the book from spawning in chest loot pools entirely. Higher numbers make it spawn proportionally more often.
+* **allowBookEnchanting** (default: false): Enables or disables putting plain books on the enchanting table.
+* **consumeEnchantedBook** (default: true): If false, books inside chiseled bookshelves are not consumed when used.
+* **curseFailureChance** (default: 0.15): Chance that a random curse is added alongside your chosen enchantment.
+* **maxBookshelfDiscountCount** (default: 15): Max regular bookshelves counted for lapis/XP discounts.
 
 ---
 
