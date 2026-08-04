@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "net.crazything.esr.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AnvilScreenHandlerMixin",
+    "EnchantingTableBlockEntityMixin",
+    "EnchantingTableBlockMixin",
+    "EnchantingTableBookshelfMixin",
+    "EnchantmentNameMixin",
+    "EnchantmentScreenHandlerTakeResultMixin",
+    "SellEnchantedBookFactoryMixin",
+    "EnchantmentHelperMixin"
+  ],
+  "client": [
+    "EnchantmentScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
