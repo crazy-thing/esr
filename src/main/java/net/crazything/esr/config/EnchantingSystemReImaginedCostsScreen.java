@@ -86,9 +86,9 @@ public class EnchantingSystemReImaginedCostsScreen extends Screen {
         this.list.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 6, 0xFFFFFF);
         int headerY = 36;
-        context.drawTextWithShadow(this.textRenderer, Text.literal("Lapis"), this.width / 2 - 60, headerY, 0x506DFF);
-        context.drawTextWithShadow(this.textRenderer, Text.literal("XP"), this.width / 2 + 35, headerY, 0x80FF20);
-        context.drawTextWithShadow(this.textRenderer, Text.literal("Weight"), this.width / 2 + 130, headerY, 0xFFCC00);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Lapis"), this.width / 2 + 50, headerY, 0x506DFF);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("XP"), this.width / 2 + 115, headerY, 0x80FF20);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Weight"), this.width / 2 + 180, headerY, 0xFFCC00);
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -212,10 +212,10 @@ public class EnchantingSystemReImaginedCostsScreen extends Screen {
                 EnchantingSystemReImaginedConfig.EnchantmentCost cost = EnchantingSystemReImaginedConfig
                         .get().enchantmentCosts.get(this.key);
 
-                int weightX = x + entryWidth - 100;
-                int xpX = x + entryWidth - 205;
-                int lapisX = x + entryWidth - 310;
-                int lockX = lapisX - 25;
+                int lockX = x + 205;
+                int lapisX = x + 230;
+                int xpX = x + 295;
+                int weightX = x + 360;
                 int nameMaxW = lockX - x - 8;
                 String truncated = EnchantingSystemReImaginedCostsScreen.this.textRenderer.trimToWidth(name, nameMaxW);
                 context.drawTextWithShadow(EnchantingSystemReImaginedCostsScreen.this.textRenderer, truncated, x + 5,

@@ -5,10 +5,10 @@ import net.crazything.esr.loot.GearItemDetection;
 import net.crazything.esr.util.EnchantmentCapUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public final class SafetyNetTicker {
@@ -32,8 +32,8 @@ public final class SafetyNetTicker {
         }
         tickCounter = 0;
 
-        for (PlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            sweepInventory(player.getInventory());
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            sweepPlayer(player);
         }
 
         for (ServerWorld world : server.getWorlds()) {
@@ -42,45 +42,77 @@ public final class SafetyNetTicker {
         }
     }
 
-    private static void sweepInventory(Inventory inventory) {
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.getStack(i);
-            if (!stack.isEmpty()) {
-                if (GearItemDetection.isGearItem(stack.getItem())
-                        || GearItemDetection.isEnchantedBook(stack.getItem())) {
-                    stack.getOrCreateNbt().putBoolean("esr$PlayerOwned", true);
+    private static void sweepPlayer(ServerPlayerEntity player) {
+        boolean modified = sweepInventory(player.getInventory());
+
+        if (player.currentScreenHandler != null && player.currentScreenHandler != player.playerScreenHandler) {
+            for (int i = 0; i < player.currentScreenHandler.slots.size(); i++) {
+                ItemStack stack = player.currentScreenHandler.slots.get(i).getStack();
+                if (!stack.isEmpty()) {
+                    if (maybeFix(stack)) {
+                        modified = true;
+                    }
                 }
-                maybeFix(stack);
+            }
+        }
+
+        if (modified) {
+            player.playerScreenHandler.sendContentUpdates();
+            if (player.currentScreenHandler != null) {
+                player.currentScreenHandler.sendContentUpdates();
             }
         }
     }
 
+    private static boolean sweepInventory(Inventory inventory) {
+        boolean modified = false;
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
+            if (!stack.isEmpty()) {
+                if (GearItemDetection.isGearItem(stack) || GearItemDetection.isEnchantedBook(stack)) {
+                    stack.getOrCreateNbt().putBoolean("esr$PlayerOwned", true);
+                }
+                if (maybeFix(stack)) {
+                    modified = true;
+                }
+            }
+        }
+        return modified;
+    }
+
     private static void sweepItemEntity(ItemEntity itemEntity) {
         ItemStack stack = itemEntity.getStack();
+        if (stack.isEmpty()) {
+            return;
+        }
 
         boolean isPlayerOwned = stack.hasNbt() && stack.getNbt().getBoolean("esr$PlayerOwned");
 
         EnchantingSystemReImaginedConfig config = EnchantingSystemReImaginedConfig.get();
         if (!isPlayerOwned
                 && config.bestEffortLootStripOutsideLootTables
-                && GearItemDetection.isGearItem(stack.getItem())
-                && itemEntity.getOwner() == null
-                && itemEntity.getItemAge() <= 5) {
+                && GearItemDetection.isGearItem(stack)
+                && itemEntity.getOwner() == null) {
             stack.removeSubNbt("Enchantments");
             stack.removeSubNbt("StoredEnchantments");
             itemEntity.setStack(stack);
             return;
         }
 
-        maybeFix(stack);
+        if (maybeFix(stack)) {
+            itemEntity.setStack(stack);
+        }
     }
 
-    private static void maybeFix(ItemStack stack) {
+    private static boolean maybeFix(ItemStack stack) {
         if (stack.isEmpty()) {
-            return;
+            return false;
         }
         if (!EnchantmentCapUtil.isCompliant(stack)) {
             EnchantmentCapUtil.enforceSingleEnchantment(stack);
+            return true;
         }
+        return false;
     }
 }
+

@@ -4,9 +4,12 @@ import net.crazything.esr.config.EnchantingSystemReImaginedConfig;
 import net.crazything.esr.loot.GearItemDetection;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,13 +21,49 @@ public final class EnchantmentCapUtil {
     private EnchantmentCapUtil() {
     }
 
+    public static Map<Enchantment, Integer> getEnchantments(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+        if (stack.hasNbt() && stack.getNbt().contains("StoredEnchantments")) {
+            return EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(stack));
+        }
+        return EnchantmentHelper.get(stack);
+    }
+
+    public static void setEnchantments(Map<Enchantment, Integer> enchantments, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return;
+        }
+        if (GearItemDetection.isEnchantedBook(stack)) {
+            stack.removeSubNbt("Enchantments");
+            NbtList nbtList = new NbtList();
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                if (entry.getKey() != null) {
+                    Identifier id = Registries.ENCHANTMENT.getId(entry.getKey());
+                    if (id != null) {
+                        nbtList.add(EnchantmentHelper.createNbt(id, entry.getValue()));
+                    }
+                }
+            }
+            if (nbtList.isEmpty()) {
+                stack.removeSubNbt("StoredEnchantments");
+            } else {
+                stack.setSubNbt("StoredEnchantments", nbtList);
+            }
+        } else {
+            stack.removeSubNbt("StoredEnchantments");
+            EnchantmentHelper.set(enchantments, stack);
+        }
+    }
+
     public static void enforceSingleEnchantment(ItemStack stack) {
         if (stack.isEmpty()) {
             return;
         }
 
-        boolean isBook = GearItemDetection.isEnchantedBook(stack.getItem());
-        Map<Enchantment, Integer> current = EnchantmentHelper.get(stack);
+        boolean isBook = GearItemDetection.isEnchantedBook(stack);
+        Map<Enchantment, Integer> current = getEnchantments(stack);
 
         if (isBook) {
             Map<Enchantment, Integer> nonCursed = new LinkedHashMap<>();
@@ -54,9 +93,9 @@ public final class EnchantmentCapUtil {
                     Enchantment selected = valid.get(rand.nextInt(valid.size()));
                     Map<Enchantment, Integer> map = new LinkedHashMap<>();
                     map.put(selected, selected.getMaxLevel());
-                    EnchantmentHelper.set(map, stack);
+                    setEnchantments(map, stack);
                 } else {
-                    EnchantmentHelper.set(new LinkedHashMap<>(), stack);
+                    setEnchantments(new LinkedHashMap<>(), stack);
                 }
                 return;
             }
@@ -81,20 +120,19 @@ public final class EnchantmentCapUtil {
             }
         }
 
-        EnchantmentHelper.set(result, stack);
+        setEnchantments(result, stack);
     }
 
     public static boolean isCompliant(ItemStack stack) {
         if (stack.isEmpty()) {
             return true;
         }
-        if (GearItemDetection.isEnchantedBook(stack.getItem())) {
-            Map<Enchantment, Integer> current = EnchantmentHelper.get(stack);
-            if (current.isEmpty()) {
-                return false;
-            }
+        boolean isBook = GearItemDetection.isEnchantedBook(stack);
+        Map<Enchantment, Integer> current = getEnchantments(stack);
+
+        if (isBook && current.isEmpty()) {
+            return false;
         }
-        Map<Enchantment, Integer> current = EnchantmentHelper.get(stack);
         if (current.isEmpty()) {
             return true;
         }
@@ -120,3 +158,4 @@ public final class EnchantmentCapUtil {
         return true;
     }
 }
+

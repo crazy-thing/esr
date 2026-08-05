@@ -43,15 +43,21 @@ public final class StripGearEnchantmentsLootFunction implements LootFunction {
 
     @Override
     public ItemStack apply(ItemStack stack, LootContext context) {
-        Item item = stack.getItem();
-        if (GearItemDetection.isGearItem(item)) {
+        if (GearItemDetection.isGearItem(stack)) {
             stack.removeSubNbt("Enchantments");
             stack.removeSubNbt("StoredEnchantments");
-        } else if (GearItemDetection.isEnchantedBook(item)) {
+        } else if (GearItemDetection.isEnchantedBook(stack)) {
+            if (stack.isOf(net.minecraft.item.Items.BOOK)) {
+                ItemStack enchantedBook = new ItemStack(net.minecraft.item.Items.ENCHANTED_BOOK, stack.getCount());
+                if (stack.hasNbt()) {
+                    enchantedBook.setNbt(stack.getNbt().copy());
+                }
+                stack = enchantedBook;
+            }
             stack.removeSubNbt("Enchantments");
             removeCurses(stack);
 
-            Map<Enchantment, Integer> current = EnchantmentHelper.get(stack);
+            Map<Enchantment, Integer> current = EnchantmentCapUtil.getEnchantments(stack);
             if (current.isEmpty()) {
                 EnchantmentCapUtil.enforceSingleEnchantment(stack);
             } else if (!EnchantmentCapUtil.isCompliant(stack)) {
@@ -67,7 +73,7 @@ public final class StripGearEnchantmentsLootFunction implements LootFunction {
     private void removeCurses(ItemStack stack) {
         if (stack.isEmpty())
             return;
-        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
+        Map<Enchantment, Integer> enchants = EnchantmentCapUtil.getEnchantments(stack);
         boolean modified = false;
         Map<Enchantment, Integer> newEnchants = new LinkedHashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
@@ -78,7 +84,7 @@ public final class StripGearEnchantmentsLootFunction implements LootFunction {
             }
         }
         if (modified) {
-            EnchantmentHelper.set(newEnchants, stack);
+            EnchantmentCapUtil.setEnchantments(newEnchants, stack);
         }
     }
 
